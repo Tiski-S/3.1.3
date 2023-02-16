@@ -15,7 +15,6 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repo.UserRepository;
 
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +29,6 @@ public class UserServiceImpl implements UserService{
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
     }
-
 
     @Override
     @Transactional
@@ -48,9 +46,6 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public void saveUser(User user) {
-        User userFromDB = userRepository.findByUsername(user.getUsername());
-
-
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepository.save(user);
         
@@ -59,15 +54,22 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public void deleteUser(int id) {
+//        userRepository.deleteById(id);
+        Optional<User> user = userRepository.findById(id);
+        User user1 = user.get();
+        user1.setRoles(null);
+        userRepository.save(user1);
+//        userRepository.delete(user.get());
         userRepository.deleteById(id);
+
     }
 
     @Override
     @Transactional
     public void updateUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
+
 
     @Override
     public User getUserByName(String username) {
@@ -85,6 +87,5 @@ public class UserServiceImpl implements UserService{
         Hibernate.initialize(user.getRoles());
         return user;
     }
-
 
 }
